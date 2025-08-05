@@ -8,29 +8,31 @@ import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
+import { useQuery } from "@tanstack/react-query";
+
+import { useEffect } from "react";
 
 export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const handleSearch = async (newQuery: string) => {
-    setIsLoading(true);
-    setError(null);
-    setMovies([]);
-    try {
-      const results = await fetchMovies(newQuery);
-      setMovies(results);
-
-      if (results.length === 0) {
-        toast.error("No movies found for your request.");
-      }
-    } catch (error) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["movies", searchQuery],
+    queryFn: () => fetchMovies(searchQuery!),
+    enabled: !!searchQuery,
+    retry: false,
+  });
+  useEffect(() => {
+    if (data && data.length === 0) {
+      toast.error("No movies found for your request.");
     }
+  }, [data]);
+  const handleSearch = (newQuery: string) => {
+    if (!newQuery.trim()) {
+      toast.error("Please enter a search term.");
+      return;
+    }
+    setSearchQuery(newQuery);
   };
 
   const handleSelectMovie = (movie: Movie) => {
@@ -45,12 +47,11 @@ export default function App() {
       <SearchBar onSubmit={handleSearch} />
       <Toaster position="top-center" />
 
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <MovieGrid movies={movies} onSelect={handleSelectMovie} />
-      )}
-      {error && <ErrorMessage message={error} />}
+      {isLoading && <Loader loading={isLoading} />}
+      {isError && <ErrorMessage message={(error as Error).message} />}
+
+      {data && <MovieGrid movies={data} onSelect={handleSelectMovie} />}
+
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
