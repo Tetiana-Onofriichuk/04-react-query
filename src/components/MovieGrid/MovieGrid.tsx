@@ -8,8 +8,9 @@ interface MovieGridProps {
 }
 
 export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
-  console.log("Rendering MovieGrid", movies);
-  if (movies.length === 0) return null;
+  const filteredMovies = movies.filter((movie) => movie.poster_path);
+
+  if (filteredMovies.length === 0) return null;
 
   return (
     <ul className={css.grid}>
