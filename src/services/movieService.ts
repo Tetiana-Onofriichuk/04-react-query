@@ -4,7 +4,7 @@ const IMAGE_SIZE = "original";
 import axios from "axios";
 import type { Movie } from "../types/movie";
 
-interface FetchMoviesResponse {
+export interface FetchMoviesResponse {
   results: Movie[];
   page: number;
   total_pages: number;

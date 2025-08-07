@@ -1,7 +1,11 @@
 import css from "./App.module.css";
 import SearchBar from "../SearchBar/SearchBar";
 import toast, { Toaster } from "react-hot-toast";
-import { fetchMovies } from "../../services/movieService";
+import {
+  fetchMovies,
+  type FetchMoviesResponse,
+} from "../../services/movieService";
+
 import { useState } from "react";
 import type { Movie } from "../../types/movie";
 import MovieGrid from "../MovieGrid/MovieGrid";
@@ -18,7 +22,7 @@ export default function App() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<FetchMoviesResponse>({
     queryKey: ["movies", searchQuery, currentPage],
     queryFn: () => fetchMovies(searchQuery!, currentPage),
     enabled: !!searchQuery,
