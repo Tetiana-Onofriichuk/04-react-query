@@ -24,7 +24,7 @@ export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
             <div className={css.card} onClick={() => onSelect(movie)}>
               <img
                 className={css.image}
-                src={imageUrl}
+                src={imageUrl ?? undefined}
                 alt={movie.title}
                 loading="lazy"
               />
