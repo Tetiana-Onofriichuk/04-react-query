@@ -6,14 +6,21 @@ import type { Movie } from "../types/movie";
 
 interface FetchMoviesResponse {
   results: Movie[];
+  page: number;
+  total_pages: number;
+  total_results: number;
 }
 
-export async function fetchMovies(query: string): Promise<Movie[]> {
+export async function fetchMovies(
+  query: string,
+  page: number = 1
+): Promise<FetchMoviesResponse> {
   const response = await axios.get<FetchMoviesResponse>(
     "https://api.themoviedb.org/3/search/movie",
     {
       params: {
         query,
+        page,
       },
       headers: {
         Authorization: `Bearer ${import.meta.env.VITE_TMDB_ACCESS_TOKEN}`,
@@ -21,7 +28,7 @@ export async function fetchMovies(query: string): Promise<Movie[]> {
     }
   );
   console.log("RESPONSE DATA:", response.data);
-  return response.data.results;
+  return response.data;
 }
 
 export function getImageUrl(path: string) {
