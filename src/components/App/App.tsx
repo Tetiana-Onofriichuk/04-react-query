@@ -25,7 +25,7 @@ export default function App() {
     retry: false,
   });
   useEffect(() => {
-    if (data && data.results.length === 0) {
+    if (data?.results?.length === 0) {
       toast.error("No movies found for your request.");
     }
   }, [data]);
