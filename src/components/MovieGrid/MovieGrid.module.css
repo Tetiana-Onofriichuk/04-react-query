@@ -1,9 +1,10 @@
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   max-width: 1440px;
-  margin: 0 auto;
-  gap: 12px;
+  margin: 120px auto;
+  gap: 72px;
   list-style: none;
   padding: 0;
   padding-bottom: 20px;

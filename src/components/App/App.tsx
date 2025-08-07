@@ -14,6 +14,7 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import { useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
+import ScrollToTopButton from "../ScrollToTopButton/ScrollToTopButton";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -81,6 +82,7 @@ export default function App() {
           previousLabel="←"
         />
       )}
+      <ScrollToTopButton />
     </div>
   );
 }
