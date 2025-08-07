@@ -6,7 +6,7 @@ import {
   type FetchMoviesResponse,
 } from "../../services/movieService";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Movie } from "../../types/movie";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
@@ -14,8 +14,6 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import { useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
-
-import { useEffect } from "react";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -28,11 +26,15 @@ export default function App() {
     enabled: !!searchQuery,
     retry: false,
   });
+
+  const hasResults = data?.results && data.results.length > 0;
+
   useEffect(() => {
     if (data?.results?.length === 0) {
       toast.error("No movies found for your request.");
     }
   }, [data]);
+
   const handleSearch = (newQuery: string) => {
     if (!newQuery.trim()) {
       toast.error("Please enter a search term.");
@@ -45,6 +47,7 @@ export default function App() {
   const handleSelectMovie = (movie: Movie) => {
     setSelectedMovie(movie);
   };
+
   const closeModal = () => {
     setSelectedMovie(null);
   };
@@ -57,16 +60,17 @@ export default function App() {
       {isLoading && <Loader loading={isLoading} />}
       {isError && <ErrorMessage message={(error as Error).message} />}
 
-      {data?.results?.length > 0 && (
-        <MovieGrid movies={data.results} onSelect={handleSelectMovie} />
+      {hasResults && (
+        <MovieGrid movies={data!.results} onSelect={handleSelectMovie} />
       )}
 
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
-      {data?.results?.length > 0 && (
+
+      {hasResults && (
         <ReactPaginate
-          pageCount={data.total_pages}
+          pageCount={data!.total_pages}
           pageRangeDisplayed={5}
           marginPagesDisplayed={1}
           onPageChange={({ selected }) => setCurrentPage(selected + 1)}
