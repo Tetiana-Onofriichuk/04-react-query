@@ -12,7 +12,7 @@ import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
 import ScrollToTopButton from "../ScrollToTopButton/ScrollToTopButton";
 
@@ -21,12 +21,14 @@ export default function App() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, isLoading, isError, error } = useQuery<FetchMoviesResponse>({
-    queryKey: ["movies", searchQuery, currentPage],
-    queryFn: () => fetchMovies(searchQuery!, currentPage),
-    enabled: !!searchQuery,
-    retry: false,
-  });
+  const { data, isLoading, isError, error, isSuccess, isFetching } =
+    useQuery<FetchMoviesResponse>({
+      queryKey: ["movies", searchQuery, currentPage],
+      queryFn: () => fetchMovies(searchQuery!, currentPage),
+      enabled: !!searchQuery,
+      retry: false,
+      placeholderData: keepPreviousData,
+    });
 
   const hasResults = data?.results && data.results.length > 0;
 
@@ -58,12 +60,15 @@ export default function App() {
       <SearchBar onSubmit={handleSearch} />
       <Toaster position="top-center" />
 
-      {isLoading && <Loader loading={isLoading} />}
+      {isLoading && <Loader loading />}
+
       {isError && <ErrorMessage message={(error as Error).message} />}
 
-      {hasResults && (
+      {isSuccess && hasResults && (
         <MovieGrid movies={data!.results} onSelect={handleSelectMovie} />
       )}
+
+      {isFetching && !isLoading && <Loader loading />}
 
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
